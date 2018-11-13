@@ -1,13 +1,19 @@
-FROM node:8.11.4-alpine
-RUN apk add --no-cache \
-    bash \
-    curl \
-    python2 \
-    py2-pip \
-    python2-dev \
-    gcc \
-    musl-dev \
-    libffi-dev \
-    openssl-dev \
-    git
-RUN pip install pymysql pyyaml && npm install -g cnpm
+FROM node:8.12.0-stretch
+# Modify timezone
+ENV TZ=Asia/Shanghai
+# Add mirror source
+RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak && \
+    echo 'deb http://mirrors.aliyun.com/debian stretch main contrib non-free' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.aliyun.com/debian stretch-proposed-updates main contrib non-free' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.aliyun.com/debian stretch-updates main contrib non-free' >> /etc/apt/sources.list && \
+    echo 'deb http://mirrors.aliyun.com/debian-security/ stretch/updates main non-free contrib' >> /etc/apt/sources.list && \
+    echo 'deb-src http://mirrors.aliyun.com/debian stretch main contrib non-free' >> /etc/apt/sources.list && \
+    echo 'deb-src http://mirrors.aliyun.com/debian stretch-proposed-updates main contrib non-free' >> /etc/apt/sources.list && \
+    echo 'deb-src http://mirrors.aliyun.com/debian stretch-updates main contrib non-free' >> /etc/apt/sources.list && \
+    echo 'deb-src http://mirrors.aliyun.com/debian-security/ stretch/updates main non-free contrib' >> /etc/apt/sources.list
+# Install base packages
+RUN apt-get update && apt-get install -y \
+        vim locales openssh-client ca-certificates tar gzip net-tools netcat unzip zip bzip2 curl wget python2.7 python-pip git \
+	&& rm -rf /var/lib/apt/lists/* \
+    && pip install pymysql==0.9.2 pyyaml==3.13 -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com \
+    && npm install -g cnpm
