@@ -1,4 +1,6 @@
+FROM gcr.io/kaniko-project/executor:v0.9.0
 FROM node:8.12.0-stretch
+COPY --from=0 /kaniko/executor /usr/local/bin/kaniko
 # Modify timezone
 ENV TZ=Asia/Shanghai
 # Add mirror source
